@@ -1,0 +1,35 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs
+logs/
+*.log
+
+# Build output
+dist/
+build/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Environment
+.env
+.env.*
+
+# Coverage directory used by testing tools
+coverage/
+
+# IDE-specific files
+.idea/
+.vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
