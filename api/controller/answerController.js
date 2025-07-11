@@ -2,13 +2,13 @@ const { Answer, Pertanyaan } = require("../../models");
 const answerValidation = require("../../validation/answer/");
 
 const jawabSoal = async (req, res) => {
-  // Validasi input
   const { errors } = answerValidation.validateCreatePayload(req.body);
   if (errors) {
     return res.status(400).json({ status: "errors", errors: errors.details });
   }
 
-  const { userId, questionId, jawaban } = req.body;
+  const { userId, questionId, jawaban, gameId, namaPemain } = req.body;
+
 
   try {
     // Cari soal
@@ -29,6 +29,8 @@ const jawabSoal = async (req, res) => {
       questionId,
       jawaban,
       isCorrect,
+      gameId,
+      namaPemain,
     });
 
     res.status(201).json({
