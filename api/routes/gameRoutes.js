@@ -14,6 +14,6 @@ router.use(authMiddleware);
 router.post("/start", startGame);
 router.post("/finish", finishGame);
 router.post("/skors",saveSkor);
-router.post("/hasil",getHasil);
+router.get("/hasil",getHasil);
 
 module.exports = router;
