@@ -36,7 +36,6 @@ const finishGame = async (req, res) => {
     }, 0);
 
     const tanggal = new Date();
-    // Simpan ke tabel scores
     const score = await Skor.create({
       userId,
       tanggal,

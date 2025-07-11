@@ -25,6 +25,18 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
       },
+      gameId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      namaPemain: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      skorLumbung: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
     },
     {
       sequelize,
