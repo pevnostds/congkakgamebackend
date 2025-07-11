@@ -3,6 +3,7 @@ const {
   startGame,
   finishGame,
   saveSkor,
+  getHasil,
 } = require("../controller/gameController");
 const { authMiddleware } = require("../../middleware");
 
@@ -13,5 +14,6 @@ router.use(authMiddleware);
 router.post("/start", startGame);
 router.post("/finish", finishGame);
 router.post("/skors",saveSkor);
+router.post("/hasil",getHasil);
 
 module.exports = router;

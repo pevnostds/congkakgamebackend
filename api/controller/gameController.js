@@ -1,5 +1,5 @@
 const { nanoid } = require("nanoid");
-const { Answer, Skor } = require("../../models");
+const { Answer, Skor, users } = require("../../models");
 
 // POST /game/start
 const startGame = async (req, res) => {
@@ -77,8 +77,23 @@ const saveSkor = async (req, res) => {
   }
 };
 
+const getHasil = async (req, res) => {
+  try {
+    const data = await Score.findAll({
+      include: [{ model: users, attributes: ["name"] }],
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.json({ success: true, data });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 module.exports = {
   startGame,
   finishGame,
   saveSkor,
+  getHasil
 };
