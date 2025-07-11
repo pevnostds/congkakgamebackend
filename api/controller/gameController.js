@@ -83,7 +83,7 @@ const getHasil = async (req, res) => {
       include: [{ model: users, attributes: ["username"] }],
       order: [["createdAt", "DESC"]],
     });
-
+    
     res.json({ success: true, data });
   } catch (err) {
     console.error(err);

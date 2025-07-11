@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 exports.create = Joi.object().keys({
-  userId: Joi.number().integer().required(),
+  userId: Joi.number().integer().optional(),
   total_nilai: Joi.number().integer().required(),
   tanggal: Joi.date().required(),
   gameId: Joi.string().min(1).required(),
@@ -10,7 +10,7 @@ exports.create = Joi.object().keys({
 });
 
 exports.update = Joi.object().keys({
-  userId: Joi.number().integer().required(),
+  userId: Joi.number().integer().optional(),
   total_nilai: Joi.number().integer().required(),
   tanggal: Joi.date().required(),
   gameId: Joi.string().min(1).required(),
