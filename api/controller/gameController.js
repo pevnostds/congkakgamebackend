@@ -54,7 +54,7 @@ const finishGame = async (req, res) => {
 
 const saveSkor = async (req, res) => {
   const userId = req.user.id;
-  const { total_nilai } = req.body;
+  const { total_nilai,namaPemain,skorLumbung,gameId } = req.body;
   const tanggal = new Date(); 
 
   if (!total_nilai) {
@@ -66,6 +66,9 @@ const saveSkor = async (req, res) => {
       userId,
       total_nilai,
       tanggal,
+      namaPemain,
+      skorLumbung,
+      gameId
     });
 
     res.status(201).json(skor);
