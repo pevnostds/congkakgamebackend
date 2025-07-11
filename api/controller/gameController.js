@@ -79,7 +79,7 @@ const saveSkor = async (req, res) => {
 
 const getHasil = async (req, res) => {
   try {
-    const data = await Score.findAll({
+    const data = await Skor.findAll({
       include: [{ model: users, attributes: ["name"] }],
       order: [["createdAt", "DESC"]],
     });
