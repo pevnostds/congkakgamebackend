@@ -54,8 +54,8 @@ const finishGame = async (req, res) => {
 
 const saveSkor = async (req, res) => {
   const userId = req.user.id;
-  const { total_nilai,namaPemain,skorLumbung,gameId } = req.body;
-  const tanggal = new Date(); 
+  const { total_nilai, namaPemain, skorLumbung, gameId } = req.body;
+  const tanggal = new Date();
 
   if (!total_nilai) {
     return res.status(400).json({ message: "Total nilai wajib diisi" });
@@ -68,23 +68,39 @@ const saveSkor = async (req, res) => {
       tanggal,
       namaPemain,
       skorLumbung,
-      gameId
+      gameId,
     });
 
     res.status(201).json(skor);
   } catch (err) {
-    res.status(500).json({ message: "Gagal menyimpan skor", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Gagal menyimpan skor", error: err.message });
   }
 };
 
 const getHasil = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = (page - 1) * limit;
+
   try {
-    const data = await Skor.findAll({
+    const { count, rows } = await Skor.findAndCountAll({
       include: [{ model: users, attributes: ["username"] }],
       order: [["createdAt", "DESC"]],
+      limit,
+      offset,
     });
-    
-    res.json({ success: true, data });
+
+    res.json({
+      success: true,
+      data: rows,
+      pagination: {
+        currentPage: page,
+        totalItems: count,
+        totalPages: Math.ceil(count / limit),
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: err.message });
@@ -95,5 +111,5 @@ module.exports = {
   startGame,
   finishGame,
   saveSkor,
-  getHasil
+  getHasil,
 };
