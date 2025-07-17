@@ -1,5 +1,6 @@
 const { nanoid } = require("nanoid");
 const { Answer, Skor, users } = require("../../models");
+const { Sequelize } = require("sequelize");
 
 // POST /game/start
 const startGame = async (req, res) => {
@@ -86,7 +87,6 @@ const getRekapGrouped = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
 
-    // ambil semua data hasil group (tanpa offset dulu)
     const rawData = await Answer.findAll({
       attributes: [
         "gameId",
@@ -148,7 +148,7 @@ const getRekapGrouped = async (req, res) => {
       totalItems: total,
     });
   } catch (err) {
-    console.error(err);
+    console.error("DETAIL ERROR:", err);
     res
       .status(500)
       .json({ success: false, message: "Gagal mengambil data rekapan." });
