@@ -82,11 +82,11 @@ const saveSkor = async (req, res) => {
 
 const getRekapGrouped = async (req, res) => {
   try {
-    // ambil query param
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
 
+    // 1. Ambil data dari tabel Answer
     const rawData = await Answer.findAll({
       attributes: [
         "gameId",
@@ -111,14 +111,25 @@ const getRekapGrouped = async (req, res) => {
       raw: true,
     });
 
-    // group berdasarkan gameId (di memory)
+    // 2. Ambil semua skor dari tabel Skor
+    const allSkor = await Skor.findAll({ raw: true });
+
+    // 3. Gabungkan berdasarkan gameId dan namaPemain
     const grouped = rawData.reduce((acc, item) => {
       const existing = acc.find((g) => g.gameId === item.gameId);
+
+      // cari skor untuk pemain ini
+      const skor = allSkor.find(
+        (s) =>
+          s.gameId === item.gameId && s.namaPemain === item.namaPemain
+      );
 
       const playerData = {
         namaPemain: item.namaPemain,
         benar: parseInt(item.benar),
         salah: parseInt(item.salah),
+        total_nilai: skor ? skor.total_nilai : 0,
+        skorLumbung: skor ? skor.skorLumbung : 0,
       };
 
       if (existing) {
@@ -133,11 +144,8 @@ const getRekapGrouped = async (req, res) => {
       return acc;
     }, []);
 
-    // hitung total halaman
     const total = grouped.length;
     const totalPages = Math.ceil(total / limit);
-
-    // ambil hanya data sesuai halaman
     const paginatedData = grouped.slice(offset, offset + limit);
 
     res.json({
@@ -149,11 +157,13 @@ const getRekapGrouped = async (req, res) => {
     });
   } catch (err) {
     console.error("DETAIL ERROR:", err);
-    res
-      .status(500)
-      .json({ success: false, message: "Gagal mengambil data rekapan." });
+    res.status(500).json({
+      success: false,
+      message: "Gagal mengambil data rekapan.",
+    });
   }
 };
+
 
 module.exports = {
   startGame,
