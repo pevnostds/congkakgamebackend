@@ -79,31 +79,79 @@ const saveSkor = async (req, res) => {
   }
 };
 
-const getHasil = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const offset = (page - 1) * limit;
-
+const getRekapGrouped = async (req, res) => {
   try {
-    const { count, rows } = await Skor.findAndCountAll({
-      include: [{ model: users, attributes: ["username"] }],
-      order: [["createdAt", "DESC"]],
-      limit,
-      offset,
+    // ambil query param
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    // ambil semua data hasil group (tanpa offset dulu)
+    const rawData = await Answer.findAll({
+      attributes: [
+        "gameId",
+        "namaPemain",
+        [
+          Sequelize.fn(
+            "SUM",
+            Sequelize.literal(`CASE WHEN "isCorrect" = true THEN 1 ELSE 0 END`)
+          ),
+          "benar",
+        ],
+        [
+          Sequelize.fn(
+            "SUM",
+            Sequelize.literal(`CASE WHEN "isCorrect" = false THEN 1 ELSE 0 END`)
+          ),
+          "salah",
+        ],
+      ],
+      group: ["gameId", "namaPemain"],
+      order: [["gameId", "DESC"]],
+      raw: true,
     });
+
+    // group berdasarkan gameId (di memory)
+    const grouped = rawData.reduce((acc, item) => {
+      const existing = acc.find((g) => g.gameId === item.gameId);
+
+      const playerData = {
+        namaPemain: item.namaPemain,
+        benar: parseInt(item.benar),
+        salah: parseInt(item.salah),
+      };
+
+      if (existing) {
+        existing.players.push(playerData);
+      } else {
+        acc.push({
+          gameId: item.gameId,
+          players: [playerData],
+        });
+      }
+
+      return acc;
+    }, []);
+
+    // hitung total halaman
+    const total = grouped.length;
+    const totalPages = Math.ceil(total / limit);
+
+    // ambil hanya data sesuai halaman
+    const paginatedData = grouped.slice(offset, offset + limit);
 
     res.json({
       success: true,
-      data: rows,
-      pagination: {
-        currentPage: page,
-        totalItems: count,
-        totalPages: Math.ceil(count / limit),
-      },
+      data: paginatedData,
+      currentPage: page,
+      totalPages,
+      totalItems: total,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Gagal mengambil data rekapan." });
   }
 };
 
@@ -111,5 +159,5 @@ module.exports = {
   startGame,
   finishGame,
   saveSkor,
-  getHasil,
+  getRekapGrouped,
 };

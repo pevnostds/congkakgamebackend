@@ -3,7 +3,7 @@ const {
   startGame,
   finishGame,
   saveSkor,
-  getHasil,
+  getRekapGrouped,
 } = require("../controller/gameController");
 const { authMiddleware } = require("../../middleware");
 
@@ -14,6 +14,6 @@ router.use(authMiddleware);
 router.post("/start", startGame);
 router.post("/finish", finishGame);
 router.post("/skors",saveSkor);
-router.get("/hasil",getHasil);
+router.get("/hasil",getRekapGrouped);
 
 module.exports = router;
