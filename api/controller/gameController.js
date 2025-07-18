@@ -164,10 +164,34 @@ const getRekapGrouped = async (req, res) => {
   }
 };
 
+const deleteDataGame = async (req, res) => {
+  const { gameId } = req.params;
+
+  try {
+    await Answer.destroy({
+      where: { gameId },
+    });
+    await Skor.destroy({
+      where: { gameId },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Semua data untuk gameId ${gameId} berhasil dihapus.`,
+    });
+  } catch (error) {
+    console.error("❌ Gagal hapus data game:", error);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan saat menghapus data game.",
+    });
+  }
+};
 
 module.exports = {
   startGame,
   finishGame,
   saveSkor,
   getRekapGrouped,
+  deleteDataGame
 };
